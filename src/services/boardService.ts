@@ -39,3 +39,44 @@ export async function getBaords(): Promise<Board[]>{
     return response.json();
 }
 
+export async function getBoardById(id: number): Promise<Board>{
+    const response = await fetch(`${BASE_URL}/${id}`, {
+        method: 'GET',
+        next: {revalidate:0},
+    });
+    if(!response.ok){
+        throw new Error('${id}번 방명록 불러오기에 실패했습니다.');
+    }
+    return response.json();
+}
+
+export async function createBoard(data: CreateBoardRequest): Promise<Board> {
+    const response = await fetch(BASE_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        // 방명록은 생성 즉시 보여야 함으로 캐시 off
+        next: { revalidate: 0 },
+    });
+    if(!response.ok){
+        throw new Error('방명록 생성에 실패했습니다.');
+    }
+    return response.json();
+}
+
+export async function updateBoard(id: number, data: UpdateBoardRequest): Promise<Board>{
+    const response = await fetch(`${BASE_URL}/${id}`,{
+        method: 'PUT',
+        headers:{
+            'Content-Type':'application/json',
+        },
+        body:JSON.stringify(data),
+        next:{revalidate:0},
+    });
+    if(!response.ok){
+        throw new Error('방명록 수정에 실패했습니다.');
+    }
+    return response.json();
+}
