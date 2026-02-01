@@ -30,14 +30,34 @@ export default function BoardPage() {
   });
 
   // 상세 창에 띄울 글 상태
+  // Board | null: Board 타입이거나 null 일 수 있음
+  // (null): 초기값 null
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
 
-  // 입력참에 글자 칠때 값 변경해주는 함수
+  // 팝업창이 수정 중인지 아닌지 저장 (true: 수정 중, false: 보기 중)
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  // 수정 중 내용 담아둘 변수
+  const [editData, setEditData] = useState<UpdateBoardRequest>({
+    author: "",
+    content: "",
+    stickerId: 1,
+    password: "",
+  });
+
+  // 입력창에 글자 칠때 값 변경해주는 함수
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // name: input 태그의 name 속성 값, value: 입력한 값, e.target: 이벤트가 발생한 대상
     const { name, value } = e.target;
     // ...: 스프레드 연산자 (기존 객체 복사)
     setNewBoardData({ ...newBoardData, [name]: value });
+  };
+
+  // 수정창에 글자 값 변경
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setEditData({ ...editData, [name]: value });
   };
 
   // 1. 방명록 목록 조회 함수
@@ -82,7 +102,7 @@ export default function BoardPage() {
     }
 
     try {
-      const result = await createBoard(newBoardData);
+      await createBoard(newBoardData);
       alert("방명록이 성공적으로 작성되었습니다.");
       fetchBoardList(); // 작성 후 방명록 목록 새로고침
     } catch (error: any) {
@@ -97,6 +117,7 @@ export default function BoardPage() {
       const result = await updateBoard(id, data);
       setSelectedBoard(result);
       alert("방명록이 성공적으로 수정되었습니다.");
+      setIsEditing(false); // 수정 모드 종료
       fetchBoardList(); // 수정 후 방명록 목록 새로고침
     } catch (error: any) {
       console.error("방명록 수정 중 오류 발생: ", error);
@@ -107,7 +128,7 @@ export default function BoardPage() {
   // 5. 방명록 삭제 함수
   const removeBoard = async (id: number, data: DeleteBoardRequest) => {
     try {
-      const result = await deleteBoard(id, data);
+      await deleteBoard(id, data);
       setSelectedBoard(null);
       alert("방명록이 성공적으로 삭제되었습니다.");
       fetchBoardList(); // 삭제 후 방명록 목록 새로고침
@@ -115,6 +136,26 @@ export default function BoardPage() {
       console.error("방명록 삭제 중 오류 발생: ", error);
       alert(error.message);
     }
+  };
+
+  // 버튼 클릭시 실행 함수
+  const hadleDeleteClick = () => {
+    const password = prompt("비밀번호를 입력하세요");
+    if (password && selectedBoard) {
+      removeBoard(selectedBoard.id, { password });
+    }
+  };
+
+  const handleEditClick = () => {
+    if (!selectedBoard) return;
+
+    setEditData({
+      author: selectedBoard.author,
+      content: selectedBoard.content,
+      stickerId: 1,
+      password: "",
+    });
+    setIsEditing(true); // 수정 모드로 전환
   };
 
   return (
@@ -180,33 +221,74 @@ export default function BoardPage() {
       {selectedBoard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">
-              {selectedBoard?.author}님의 글
-            </h3>
-            <p className="mb-4">{selectedBoard.content}</p>
+            {isEditing ? (
+              /* --- [수정 모드] 입력칸들이 나타남 --- */
+              <div className="space-y-4">
+                <input
+                  className="w-full border p-2"
+                  name="author"
+                  value={editData.author}
+                  onChange={handleEditChange}
+                />
+                <textarea
+                  className="w-full border p-2"
+                  name="content"
+                  value={editData.content}
+                  onChange={handleEditChange}
+                />
+                <input
+                  type="password"
+                  placeholder="비밀번호 입력"
+                  className="w-full border p-2"
+                  name="password"
+                  onChange={handleEditChange}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => editBoard(selectedBoard.id, editData)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded flex-1"
+                  >
+                    저장
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="bg-gray-500 text-white px-4 py-2 rounded flex-1"
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* --- [보기 모드] 기존 코드와 동일 --- */
+              <>
+                <h3 className="text-lg font-bold mb-4">
+                  {selectedBoard?.author}님의 글
+                </h3>
+                <p className="mb-4">{selectedBoard.content}</p>
 
-            <div className="flex justify-end">
-              <button className="flex-1 bg-yellow-500 text-white py-2 rounded">
-                수정
-              </button>
-              <button
-                onClick={() =>
-                  removeBoard(selectedBoard.id, {
-                    password: prompt("비밀번호를 입력하세요") || "",
-                  })
-                }
-                className="flex-1 bg-red-500 text-white py-2 rounded"
-              >
-                삭제
-              </button>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleEditClick} // 수정 함수 실행
+                    className="flex-1 bg-yellow-500 text-white py-2 rounded"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={hadleDeleteClick} // 삭제 함수 실행
+                    className="flex-1 bg-red-500 text-white py-2 rounded"
+                  >
+                    삭제
+                  </button>
 
-              <button
-                onClick={() => setSelectedBoard(null)} // selectedBoard를 null 로 만듦
-                className="px-4 py-2 bg-gray-500 text-white rounded"
-              >
-                닫기
-              </button>
-            </div>
+                  <button
+                    onClick={() => setSelectedBoard(null)} // selectedBoard를 null 로 만듦
+                    className="px-4 py-2 bg-gray-500 text-white rounded"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
