@@ -28,7 +28,7 @@ export interface DeleteBoardRequest{
 
 const BASE_URL = 'http://localhost:8080/api/boards';
 
-export async function getBaords(): Promise<Board[]>{
+export async function getBaordList(): Promise<Board[]>{
     const response = await fetch(BASE_URL, {
         method: 'GET',
         next: {revalidate:0},
@@ -39,7 +39,7 @@ export async function getBaords(): Promise<Board[]>{
     return response.json();
 }
 
-export async function getBoardById(id: number): Promise<Board>{
+export async function getBoard(id: number): Promise<Board>{
     const response = await fetch(`${BASE_URL}/${id}`, {
         method: 'GET',
         next: {revalidate:0},
@@ -61,7 +61,8 @@ export async function createBoard(data: CreateBoardRequest): Promise<Board> {
         next: { revalidate: 0 },
     });
     if(!response.ok){
-        throw new Error('방명록 생성에 실패했습니다.');
+        const errorData = await response.json();
+        throw new Error(errorData.message || '알 수 없는 오류');
     }
     return response.json();
 }
@@ -76,7 +77,24 @@ export async function updateBoard(id: number, data: UpdateBoardRequest): Promise
         next:{revalidate:0},
     });
     if(!response.ok){
-        throw new Error('방명록 수정에 실패했습니다.');
+        const errorData = await response.json();
+        throw new Error(errorData.message || '알 수 없는 오류');
     }
     return response.json();
+}
+
+export async function deleteBoard(id:number, data: DeleteBoardRequest): Promise<void>{
+    const response = await fetch(`${BASE_URL}/${id}`,{
+        method: 'DELETE',
+        headers:{
+            'Content-Type':'application/json',
+        },
+        body:JSON.stringify(data),
+        next:{revalidate:0},
+    });
+    if(!response.ok){
+        const errorData = await response.json();
+        throw new Error(errorData.message || '알 수 없는 오류');
+    }
+    return response.json();;
 }
