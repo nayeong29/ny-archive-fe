@@ -29,6 +29,14 @@ export default function BoardPage() {
     password: "",
   });
 
+  const emojiList = [
+    { id: 1, emoji: "🥰" },
+    { id: 2, emoji: "🐻" },
+    { id: 3, emoji: "🍀" },
+    { id: 4, emoji: "💖" },
+    { id: 5, emoji: "💀" },
+  ];
+
   // 상세 창에 띄울 글 상태
   // Board | null: Board 타입이거나 null 일 수 있음
   // (null): 초기값 null
@@ -138,14 +146,16 @@ export default function BoardPage() {
     }
   };
 
-  // 버튼 클릭시 실행 함수
-  const hadleDeleteClick = () => {
+  // 버튼 클릭시 실행 함수들
+  // 삭제 버튼 클릭
+  const handleDeleteClick = () => {
     const password = prompt("비밀번호를 입력하세요");
     if (password && selectedBoard) {
       removeBoard(selectedBoard.id, { password });
     }
   };
 
+  // 수정 버튼 클릭
   const handleEditClick = () => {
     if (!selectedBoard) return;
 
@@ -164,6 +174,27 @@ export default function BoardPage() {
 
       {/* --- 작성 폼 구역 --- */}
       <form onSubmit={writeBoard} className="space-y-4 max-w-md">
+        {/* --- 이모지 선택 버튼 --- */}
+        <div className="flex gap-2">
+          {emojiList.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              // 사용자가 해골(💀)을 클릭하면 item.id인 4가 stickerId 에 담김
+              onClick={() =>
+                setNewBoardData({ ...newBoardData, stickerId: item.id })
+              }
+              className={`text-2xl p-2 rounded-lg ${
+                newBoardData.stickerId === item.id
+                  ? "bg-blue-200 ring-2 ring-blue-500" // 선택되었을 때 스타일
+                  : "bg-gray-100" // 선택되지 않았을 때 스타일
+              }`}
+            >
+              {item.emoji}
+            </button>
+          ))}
+        </div>
+        {/* 작성자, 내용, 비밀번호 인풋 */}
         <input
           name="author"
           placeholder="작성자" // 가이드라인
@@ -186,7 +217,7 @@ export default function BoardPage() {
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          className="px-4 py-2 bg-blue-500 text-white rounded w-full"
         >
           작성하기
         </button>
@@ -205,6 +236,10 @@ export default function BoardPage() {
             onClick={() => fetchBoard(board.id)}
             className="p-4 border border-gray-300 rounded mb-2 cursor-pointer"
           >
+            {/* 숫자를 다시 이모지로 변환해서 출력 */}
+            <span className="text-2xl">
+              {emojiList.find((e) => e.id === board.stickerId)?.emoji || "😊"}
+            </span>
             <p className="font-semibold">{board.author}</p>
             {/* 50자만 보여주기 */}
             <p>
@@ -212,6 +247,7 @@ export default function BoardPage() {
                 ? board.content.substring(0, 50) + "..."
                 : board.content}
             </p>
+            <p></p>
           </div>
         ))}
       </div>
@@ -224,6 +260,22 @@ export default function BoardPage() {
             {isEditing ? (
               /* --- [수정 모드] 입력칸들이 나타남 --- */
               <div className="space-y-4">
+                {/* 이모지 수정 선택창 */}
+                <div className="flex justify-center gap-2">
+                  {emojiList.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() =>
+                        setEditData({ ...editData, stickerId: item.id })
+                      }
+                      className={`text-xl p-2 rounded ${editData.stickerId === item.id ? "bg-blue-200" : "bg-gray-50"}`}
+                    >
+                      {/* 화면에 이모지 보여줌 */}
+                      {item.emoji}
+                    </button>
+                  ))}
+                </div>
                 <input
                   className="w-full border p-2"
                   name="author"
@@ -261,6 +313,10 @@ export default function BoardPage() {
             ) : (
               /* --- [보기 모드] 기존 코드와 동일 --- */
               <>
+                <div className="text-5xl text-left mb-4">
+                  {emojiList.find((e) => e.id === selectedBoard?.stickerId)
+                    ?.emoji || "😊"}
+                </div>
                 <h3 className="text-lg font-bold mb-4">
                   {selectedBoard?.author}님의 글
                 </h3>
@@ -274,7 +330,7 @@ export default function BoardPage() {
                     수정
                   </button>
                   <button
-                    onClick={hadleDeleteClick} // 삭제 함수 실행
+                    onClick={handleDeleteClick} // 삭제 함수 실행
                     className="flex-1 bg-red-500 text-white py-2 rounded"
                   >
                     삭제
