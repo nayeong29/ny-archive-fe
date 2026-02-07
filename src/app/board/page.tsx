@@ -1,21 +1,18 @@
 "use client";
 
-import Header from "@/components/Header";
-// import Footer from "@/components/Footer";
-
 import { useState, useEffect } from "react";
+import BoardWriteModal from "./BoardWriteModal";
 // 순서 상관 없음
 import {
   getBaordList,
   getBoard,
-  createBoard,
   updateBoard,
   deleteBoard,
   Board,
-  CreateBoardRequest,
   UpdateBoardRequest,
   DeleteBoardRequest,
 } from "@/services/boardService";
+import { EMOJI_LIST } from "@/constants/emojis";
 
 const BoardPage = () => {
   // 사용자가 입력할 값들 저장할 State 만들기
@@ -23,22 +20,6 @@ const BoardPage = () => {
   // 방명록 목록
   // Board[]: 타입 지정, ([]): 빈 배열
   const [boardList, setBoardList] = useState<Board[]>([]);
-
-  // newBoardData: 변수, setNewBoardData: 값을 변경해주는 함수, <CreateBoardRequest>: 타입 지정
-  const [newBoardData, setNewBoardData] = useState<CreateBoardRequest>({
-    author: "",
-    content: "",
-    stickerId: 1,
-    password: "",
-  });
-
-  const emojiList = [
-    { id: 1, emoji: "🥰" },
-    { id: 2, emoji: "🐻" },
-    { id: 3, emoji: "🍀" },
-    { id: 4, emoji: "💖" },
-    { id: 5, emoji: "💀" },
-  ];
 
   // 상세 창에 띄울 글 상태
   // Board | null: Board 타입이거나 null 일 수 있음
@@ -54,14 +35,7 @@ const BoardPage = () => {
     stickerId: 1,
     password: "",
   });
-
-  // 입력창에 글자 칠때 값 변경해주는 함수
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // name: input 태그의 name 속성 값, value: 입력한 값, e.target: 이벤트가 발생한 대상
-    const { name, value } = e.target;
-    // ...: 스프레드 연산자 (기존 객체 복사)
-    setNewBoardData({ ...newBoardData, [name]: value });
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 수정창에 글자 값 변경
   const handleEditChange = (
@@ -95,30 +69,6 @@ const BoardPage = () => {
       setSelectedBoard(result);
     } catch (error) {
       console.error(`${id}번 방명록 불러오기 실패: `, error);
-    }
-  };
-
-  // 3. 방명록 작성 함수
-  const writeBoard = async (e: React.FormEvent) => {
-    e.preventDefault(); // 페이지 새로고침 방지
-
-    // 모든 필드가 작성되었는지 확인
-    if (
-      !newBoardData.author ||
-      !newBoardData.content ||
-      !newBoardData.password
-    ) {
-      alert("모든 필드를 작성해주세요.");
-      return;
-    }
-
-    try {
-      await createBoard(newBoardData);
-      alert("방명록이 성공적으로 작성되었습니다.");
-      fetchBoardList(); // 작성 후 방명록 목록 새로고침
-    } catch (error: any) {
-      console.error("방명록 작성 중 오류 발생: ", error);
-      alert(error.message);
     }
   };
 
@@ -186,7 +136,7 @@ const BoardPage = () => {
           >
             {/* 숫자를 다시 이모지로 변환해서 출력 */}
             <span className="text-2xl">
-              {emojiList.find((e) => e.id === board.stickerId)?.emoji || "😊"}
+              {EMOJI_LIST.find((e) => e.id === board.stickerId)?.emoji || "😊"}
             </span>
             <p className="font-semibold">{board.author}</p>
             {/* 50자만 보여주기 */}
@@ -210,7 +160,7 @@ const BoardPage = () => {
               <div className="space-y-4">
                 {/* 이모지 수정 선택창 */}
                 <div className="flex justify-center gap-2">
-                  {emojiList.map((item) => (
+                  {EMOJI_LIST.map((item) => (
                     <button
                       key={item.id}
                       type="button"
@@ -262,7 +212,7 @@ const BoardPage = () => {
               /* --- [보기 모드] 기존 코드와 동일 --- */
               <>
                 <div className="text-5xl text-left mb-4">
-                  {emojiList.find((e) => e.id === selectedBoard?.stickerId)
+                  {EMOJI_LIST.find((e) => e.id === selectedBoard?.stickerId)
                     ?.emoji || "😊"}
                 </div>
                 <h3 className="text-lg font-bold mb-4">
@@ -297,58 +247,22 @@ const BoardPage = () => {
         </div>
       )}
 
-      <hr className="my-8" />
-      <h1 className="text-2xl font-bold mb-4">방명록 작성</h1>
-      {/* --- 작성 폼 구역 --- */}
-      <form onSubmit={writeBoard} className=" space-y-4 max-w-md">
-        {/* --- 이모지 선택 버튼 --- */}
-        <div className="flex gap-2">
-          {emojiList.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              // 사용자가 해골(💀)을 클릭하면 item.id인 4가 stickerId 에 담김
-              onClick={() =>
-                setNewBoardData({ ...newBoardData, stickerId: item.id })
-              }
-              className={`text-2xl p-2 rounded-lg ${
-                newBoardData.stickerId === item.id
-                  ? "bg-blue-200 ring-2 ring-blue-500" // 선택되었을 때 스타일
-                  : "bg-white" // 선택되지 않았을 때 스타일
-              }`}
-            >
-              {item.emoji}
-            </button>
-          ))}
+      {/* 방명록 작성 버튼 */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="fixed bottom-8 right-8 px-5 py-3 bg-orange-400 text-white rounded-full shadow-lg hover:bg-orange-500 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center text-sm font-bold z-50 cursor-pointer"
+      >
+        <div className="flex flex-col items-center">
+          <span className="text-[12px]">📝 방명록 작성하기</span>
         </div>
-        {/* 작성자, 내용, 비밀번호 인풋 */}
-        <input
-          name="author"
-          placeholder="작성자" // 가이드라인
-          onChange={handleChange} // 변화가 생길때 마다 handleChange 함수 실행
-          className="bg-white w-full p-2 border border-gray-300 rounded"
-        />
+      </button>
 
-        <input
-          name="content"
-          placeholder="내용"
-          onChange={handleChange}
-          className="bg-white w-full p-2 border border-gray-300 rounded"
-        />
-
-        <input
-          name="password"
-          placeholder="비밀번호"
-          onChange={handleChange}
-          className="bg-white w-full p-2 border border-gray-300 rounded"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded w-full"
-        >
-          작성하기
-        </button>
-      </form>
+      {/* 2. 분리한 작성 모달 */}
+      <BoardWriteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchBoardList}
+      />
     </div>
   );
 };
