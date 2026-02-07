@@ -1,5 +1,8 @@
 "use client";
 
+import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+
 import { useState, useEffect } from "react";
 // 순서 상관 없음
 import {
@@ -14,7 +17,7 @@ import {
   DeleteBoardRequest,
 } from "@/services/boardService";
 
-export default function BoardPage() {
+const BoardPage = () => {
   // 사용자가 입력할 값들 저장할 State 만들기
 
   // 방명록 목록
@@ -170,64 +173,9 @@ export default function BoardPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">방명록 작성</h1>
-
-      {/* --- 작성 폼 구역 --- */}
-      <form onSubmit={writeBoard} className="space-y-4 max-w-md">
-        {/* --- 이모지 선택 버튼 --- */}
-        <div className="flex gap-2">
-          {emojiList.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              // 사용자가 해골(💀)을 클릭하면 item.id인 4가 stickerId 에 담김
-              onClick={() =>
-                setNewBoardData({ ...newBoardData, stickerId: item.id })
-              }
-              className={`text-2xl p-2 rounded-lg ${
-                newBoardData.stickerId === item.id
-                  ? "bg-blue-200 ring-2 ring-blue-500" // 선택되었을 때 스타일
-                  : "bg-gray-100" // 선택되지 않았을 때 스타일
-              }`}
-            >
-              {item.emoji}
-            </button>
-          ))}
-        </div>
-        {/* 작성자, 내용, 비밀번호 인풋 */}
-        <input
-          name="author"
-          placeholder="작성자" // 가이드라인
-          onChange={handleChange} // 변화가 생길때 마다 handleChange 함수 실행
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-
-        <input
-          name="content"
-          placeholder="내용"
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-
-        <input
-          name="password"
-          placeholder="비밀번호"
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded w-full"
-        >
-          작성하기
-        </button>
-      </form>
-
-      <hr className="my-8" />
-
       {/* --- 목록 구역 --- */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold mb-4">방명록 목록</h2>
+        <h1 className="text-xl font-bold mb-4">방명록 목록</h1>
         {/* map 으로 boards에서 목록을 꺼내서 board 라는 이름을 붙임 */}
         {boardList.map((board) => (
           <div
@@ -243,7 +191,7 @@ export default function BoardPage() {
             <p className="font-semibold">{board.author}</p>
             {/* 50자만 보여주기 */}
             <p>
-              {board.content.length > 30
+              {board.content.length > 50
                 ? board.content.substring(0, 50) + "..."
                 : board.content}
             </p>
@@ -348,6 +296,61 @@ export default function BoardPage() {
           </div>
         </div>
       )}
+
+      <hr className="my-8" />
+      <h1 className="text-2xl font-bold mb-4">방명록 작성</h1>
+      {/* --- 작성 폼 구역 --- */}
+      <form onSubmit={writeBoard} className=" space-y-4 max-w-md">
+        {/* --- 이모지 선택 버튼 --- */}
+        <div className="flex gap-2">
+          {emojiList.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              // 사용자가 해골(💀)을 클릭하면 item.id인 4가 stickerId 에 담김
+              onClick={() =>
+                setNewBoardData({ ...newBoardData, stickerId: item.id })
+              }
+              className={`text-2xl p-2 rounded-lg ${
+                newBoardData.stickerId === item.id
+                  ? "bg-blue-200 ring-2 ring-blue-500" // 선택되었을 때 스타일
+                  : "bg-white" // 선택되지 않았을 때 스타일
+              }`}
+            >
+              {item.emoji}
+            </button>
+          ))}
+        </div>
+        {/* 작성자, 내용, 비밀번호 인풋 */}
+        <input
+          name="author"
+          placeholder="작성자" // 가이드라인
+          onChange={handleChange} // 변화가 생길때 마다 handleChange 함수 실행
+          className="bg-white w-full p-2 border border-gray-300 rounded"
+        />
+
+        <input
+          name="content"
+          placeholder="내용"
+          onChange={handleChange}
+          className="bg-white w-full p-2 border border-gray-300 rounded"
+        />
+
+        <input
+          name="password"
+          placeholder="비밀번호"
+          onChange={handleChange}
+          className="bg-white w-full p-2 border border-gray-300 rounded"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded w-full"
+        >
+          작성하기
+        </button>
+      </form>
     </div>
   );
-}
+};
+
+export default BoardPage;

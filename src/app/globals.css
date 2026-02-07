@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+    --color-pampas: #f1ebe5;
+}
+
+@layer base {
+
+    body {
+        scrollbar-gutter: stable;
+        @apply bg-pampas text-gray-800 min-h-screen;
+    }
+}
