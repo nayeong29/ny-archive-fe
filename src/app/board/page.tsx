@@ -55,11 +55,27 @@ export default function BoardPage() {
     }
   };
 
-  // 컴포넌트가 처음 렌더링 될 때 방명록 목록 불러오기
+  // 1. 컴포넌트가 처음 렌더링 될 때 방명록 목록 불러오기
   useEffect(() => {
     // 방명록 목록 호출
     fetchBoardList();
   }, []);
+
+  // 2. selectedBoard 상태가 변할 때마다 실행되는 useEffect
+  useEffect(() => {
+    if (selectedBoard) {
+      // 모달이 열리면 스크롤 방지
+      document.body.style.overflow = "hidden";
+    } else {
+      // 모달이 닫히면 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    }
+
+    // 컴포넌트가 사라질 때 원래대로
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedBoard]);
 
   // 2. 특정 방명록 상세 조회
   // id: 매개변수

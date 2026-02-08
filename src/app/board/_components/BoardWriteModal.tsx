@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createBoard, CreateBoardRequest } from "@/services/boardService";
 import { EMOJI_LIST } from "@/constants/emojis";
 
@@ -54,6 +54,17 @@ const BoardWriteModal = ({
       alert(error.message);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null; // 닫혀있으면 아무것도 안 보여줌
 
