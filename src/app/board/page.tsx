@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import BoardWriteModal from "./BoardWriteModal";
+import BoardWriteModal from "./_components/BoardWriteModal";
 // 순서 상관 없음
 import {
   getBaordList,
@@ -14,9 +14,8 @@ import {
 } from "@/services/boardService";
 import { EMOJI_LIST } from "@/constants/emojis";
 
-const BoardPage = () => {
+export default function BoardPage() {
   // 사용자가 입력할 값들 저장할 State 만들기
-
   // 방명록 목록
   // Board[]: 타입 지정, ([]): 빈 배열
   const [boardList, setBoardList] = useState<Board[]>([]);
@@ -265,6 +264,4 @@ const BoardPage = () => {
       />
     </div>
   );
-};
-
-export default BoardPage;
+}
