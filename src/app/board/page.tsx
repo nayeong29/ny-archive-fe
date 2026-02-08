@@ -266,7 +266,7 @@ export default function BoardPage() {
                   <div className="w-12 h-1 bg-orange-400 mt-5 rounded-full opacity-50"></div>
                 </div>
 
-                <div className="overflow-y-auto w-full mb-6 pr-2">
+                <div className="overflow-y-auto w-full mb-9 pr-2">
                   <p className="text-gray-900 leading-relaxed text-lg">
                     "{selectedBoard.content}"
                   </p>
