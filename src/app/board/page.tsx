@@ -245,7 +245,7 @@ export default function BoardPage() {
               </div>
             ) : (
               /* --- [보기 모드] 상단 X 버튼 적용 --- */
-              <div className="flex flex-col items-start text-left relative">
+              <div className="flex flex-col items-start text-left relative max-h-[70vh]">
                 {/* 오른쪽 상단 X 버튼 */}
                 <button
                   onClick={() => setSelectedBoard(null)}
@@ -266,9 +266,11 @@ export default function BoardPage() {
                   <div className="w-12 h-1 bg-orange-400 mt-5 rounded-full opacity-50"></div>
                 </div>
 
-                <p className="text-gray-900 leading-relaxed mb-10 text-lg">
-                  "{selectedBoard.content}"
-                </p>
+                <div className="overflow-y-auto w-full mb-6 pr-2">
+                  <p className="text-gray-900 leading-relaxed text-lg">
+                    "{selectedBoard.content}"
+                  </p>
+                </div>
 
                 {/* 하단 버튼 그룹: 닫기 버튼을 빼고 수정/삭제만 배치 */}
                 <div className="w-full flex gap-3">
