@@ -250,7 +250,7 @@ const BoardPage = () => {
       {/* 방명록 작성 버튼 */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-8 right-8 px-5 py-3 bg-orange-400 text-white rounded-full shadow-lg hover:bg-orange-500 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center text-sm font-bold z-50 cursor-pointer"
+        className="fixed bottom-30 right-8 px-5 py-3 bg-orange-400 text-white rounded-full shadow-lg hover:bg-orange-500 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center text-sm font-bold z-50 cursor-pointer"
       >
         <div className="flex flex-col items-center">
           <span className="text-[12px]">📝 방명록 작성하기</span>

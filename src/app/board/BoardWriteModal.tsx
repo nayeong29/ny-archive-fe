@@ -55,27 +55,15 @@ const BoardWriteModal = ({
   };
 
   if (!isOpen) return null; // 닫혀있으면 아무것도 안 보여줌
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        zIndex: 100,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "2rem",
-          margin: "10% auto",
-          maxWidth: "400px",
-        }}
-      >
-        <h2>방명록 작성</h2>
-        <h1 className="text-2xl font-bold mb-4">방명록 작성</h1>
-        {/* --- 작성 폼 구역 --- */}
-        <form onSubmit={writeBoard} className=" space-y-4 max-w-md">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex justify-center items-start">
+      <div className="bg-white p-8 mt-[10vh] max-w-[400px] w-[90%] rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
+        <h1 className="text-2xl font-black mb-6 text-gray-900 tracking-tight">
+          방명록 작성
+        </h1>
+
+        <form onSubmit={writeBoard} className="space-y-4">
           {/* --- 이모지 선택 버튼 --- */}
           <div className="flex gap-2">
             {EMOJI_LIST.map((item) => (
@@ -88,8 +76,8 @@ const BoardWriteModal = ({
                 }
                 className={`text-2xl p-2 rounded-lg ${
                   newBoardData.stickerId === item.id
-                    ? "bg-blue-200 ring-2 ring-blue-500" // 선택되었을 때 스타일
-                    : "bg-white" // 선택되지 않았을 때 스타일
+                    ? "bg-orange-200 ring-2 ring-orange-400" // 선택되었을 때 스타일
+                    : "bg-gray-100" // 선택되지 않았을 때 스타일
                 }`}
               >
                 {item.emoji}
@@ -101,32 +89,32 @@ const BoardWriteModal = ({
             name="author"
             placeholder="작성자" // 가이드라인
             onChange={handleChange} // 변화가 생길때 마다 handleChange 함수 실행
-            className="bg-white w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded"
           />
 
           <input
             name="content"
             placeholder="내용"
             onChange={handleChange}
-            className="bg-white w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded"
           />
 
           <input
             name="password"
             placeholder="비밀번호"
             onChange={handleChange}
-            className="bg-white w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded"
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded w-full"
+            className="px-4 py-2 bg-orange-400 text-white rounded w-full hover:bg-orange-500"
           >
             작성하기
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-500 text-white rounded w-full"
+            className="px-4 py-2 bg-gray-400 text-white rounded w-full hover:bg-gray-500"
           >
             취소
           </button>

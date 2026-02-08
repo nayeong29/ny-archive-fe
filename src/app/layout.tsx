@@ -15,13 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="antialiased">
+      <body className="flex flex-col min-h-screen antialiased">
+        {" "}
         {/* 모든 페이지 상단에 헤더 고정 */}
         <Header />
-
         {/* 실제 페이지 내용들이 들어가는 곳 */}
         <main>{children}</main>
-
         {/* 모든 페이지 하단에 푸터 고정 */}
         <Footer />
       </body>

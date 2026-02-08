@@ -3,14 +3,14 @@ import Link from "next/link";
 const Header = () => {
   const menuItems = [
     { label: "Home", path: "/" },
-    { label: "Vibe", path: "/vive" },
+    { label: "Vibe", path: "/vibe" },
     { label: "Record", path: "/record" },
     { label: "Board", path: "/board" },
   ];
 
   return (
     <header className="w-full grid grid-cols-3 items-center p-6 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-      <div className="text-2xl font-black tracking-tight text-gray-600">
+      <div className="text-2xl font-black tracking-tight text-black-600">
         <Link href="/">NY ARCHIVE</Link>
       </div>
 
@@ -20,7 +20,7 @@ const Header = () => {
             <li key={item.path}>
               <Link
                 href={item.path}
-                className="text-gray-600 font-medium hover:text-blue-500 transition-colors duration-200"
+                className="text-gray-600 font-medium hover:text-orange-500 transition-colors duration-200"
               >
                 {item.label}
               </Link>
