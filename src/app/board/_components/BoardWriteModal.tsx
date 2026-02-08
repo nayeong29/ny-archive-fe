@@ -19,6 +19,7 @@ const BoardWriteModal = ({
     content: "",
     stickerId: 1,
     password: "",
+    createdAt: "",
   });
 
   // 입력창에 글자 칠때 값 변경해주는 함수
@@ -57,9 +58,9 @@ const BoardWriteModal = ({
   if (!isOpen) return null; // 닫혀있으면 아무것도 안 보여줌
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex justify-center items-start">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center">
       <div className="bg-white p-8 mt-[10vh] max-w-[400px] w-[90%] rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
-        <h1 className="text-2xl font-black mb-6 text-gray-900 tracking-tight">
+        <h1 className="text-2xl font-bold mb-6 text-gray-900 tracking-tight">
           방명록 작성
         </h1>
 
@@ -101,23 +102,31 @@ const BoardWriteModal = ({
 
           <input
             name="password"
+            type="password"
             placeholder="비밀번호"
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded"
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-orange-400 text-white rounded w-full hover:bg-orange-500"
-          >
-            작성하기
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-400 text-white rounded w-full hover:bg-gray-500"
-          >
-            취소
-          </button>
+          <p className="text-gray-500 text-xs mt-1 ml-1">
+            비밀번호는 삭제 및 수정에 필요하니 꼬옥 기억해주면되
+            <br />
+            기억 안나면 나한테 문의하시길...
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-orange-400 text-white rounded w-full hover:bg-orange-500 transition-colors"
+            >
+              작성
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-400 text-white rounded w-full hover:bg-gray-500 transition-colors"
+            >
+              취소
+            </button>
+          </div>
         </form>
       </div>
     </div>

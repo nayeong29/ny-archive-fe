@@ -33,6 +33,7 @@ export default function BoardPage() {
     content: "",
     stickerId: 1,
     password: "",
+    createdAt: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -114,17 +115,41 @@ export default function BoardPage() {
     setEditData({
       author: selectedBoard.author,
       content: selectedBoard.content,
-      stickerId: 1,
+      stickerId: selectedBoard.stickerId,
       password: "",
+      createdAt: selectedBoard.createdAt,
     });
     setIsEditing(true); // 수정 모드로 전환
   };
 
   return (
     <div className="p-8 max-w-[800px] mx-auto">
-      {" "}
       {/* --- 목록 구역 --- */}
-      <h1 className="text-xl font-bold mb-4">방명록 목록</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900 ml-1">방명록 목록</h1>
+
+        {/* 방명록 작성 버튼 */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center justify-center px-4 py-2.5 -mb-9 mr-2 text-sm font-bold text-white bg-orange-400 rounded-xl shadow-sm cursor-pointer hover:bg-orange-500 transition-colors"
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-[12px]">📝 방명록 작성하기</span>
+          </div>
+        </button>
+
+        {/* 2. 분리한 작성 모달 */}
+        <BoardWriteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchBoardList}
+        />
+      </div>
+
+      <p className="text-gray-600 text-xs mb-7 mt-2 ml-1">
+        나영이한테 인사 하고가라
+      </p>
+
       {/* map 으로 boards에서 목록을 꺼내서 board 라는 이름을 붙임 */}
       <div className="grid grid-cols-3 gap-6">
         {boardList.map((board) => (
@@ -135,30 +160,37 @@ export default function BoardPage() {
             className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col h-52"
           >
             {/* 숫자를 다시 이모지로 변환해서 출력 */}
-            <div className="text-3xl mb-3 -ml-1 ">
+            <div className="flex justify-between text-3xl mb-3 -ml-1 ">
               {EMOJI_LIST.find((e) => e.id === board.stickerId)?.emoji || "😊"}
+              <p className="text-gray-500 text-sm mt-1">{board.createdAt}</p>
             </div>
+
+            {/* 작성자 */}
             <p className="font-bold text-gray-900 mb-1">{board.author}</p>
-            {/* 50자만 보여주기 */}
+
+            {/* 내용 50자만 보여주기 */}
             <p className="text-gray-500 text-sm line-clamp-3">
               {board.content.length > 50
                 ? board.content.substring(0, 50) + "..."
                 : board.content}
             </p>
-            <p></p>
           </div>
         ))}
       </div>
+
       {/* --- 상세 보기 팝업 --- */}
       {/* --- selectedBoard 가 비어있지 않으면 뒤에 코드 출력 --- */}
       {selectedBoard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white p-8 mt-[10vh] max-w-[400px] w-[90%] rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
             {isEditing ? (
               /* --- [수정 모드] 입력칸들이 나타남 --- */
               <div className="space-y-4">
+                <h1 className="text-2xl font-bold mb-6 text-gray-900 tracking-tight">
+                  수정하기
+                </h1>
                 {/* 이모지 수정 선택창 */}
-                <div className="flex justify-center gap-2">
+                <div className="flex gap-2">
                   {EMOJI_LIST.map((item) => (
                     <button
                       key={item.id}
@@ -166,7 +198,11 @@ export default function BoardPage() {
                       onClick={() =>
                         setEditData({ ...editData, stickerId: item.id })
                       }
-                      className={`text-xl p-2 rounded ${editData.stickerId === item.id ? "bg-blue-200" : "bg-gray-50"}`}
+                      className={`text-2xl p-2 rounded-lg ${
+                        editData.stickerId === item.id
+                          ? "bg-orange-200 ring-2 ring-orange-400" // 선택되었을 때 스타일
+                          : "bg-gray-100" // 선택되지 않았을 때 스타일
+                      }`}
                     >
                       {/* 화면에 이모지 보여줌 */}
                       {item.emoji}
@@ -174,13 +210,13 @@ export default function BoardPage() {
                   ))}
                 </div>
                 <input
-                  className="w-full border p-2"
+                  className="w-full p-2 border border-gray-300 rounded"
                   name="author"
                   value={editData.author}
                   onChange={handleEditChange}
                 />
                 <textarea
-                  className="w-full border p-2"
+                  className="w-full p-2 border border-gray-300 rounded"
                   name="content"
                   value={editData.content}
                   onChange={handleEditChange}
@@ -188,78 +224,72 @@ export default function BoardPage() {
                 <input
                   type="password"
                   placeholder="비밀번호 입력"
-                  className="w-full border p-2"
+                  className="w-full p-2 border border-gray-300 rounded"
                   name="password"
                   onChange={handleEditChange}
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => editBoard(selectedBoard.id, editData)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded flex-1"
+                    className="px-4 py-2 bg-orange-400 text-white rounded w-full hover:bg-orange-500 transition-colors"
                   >
                     저장
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="bg-gray-500 text-white px-4 py-2 rounded flex-1"
+                    className="px-4 py-2 bg-gray-400 text-white rounded w-full hover:bg-gray-500 transition-colors"
                   >
                     취소
                   </button>
                 </div>
               </div>
             ) : (
-              /* --- [보기 모드] 기존 코드와 동일 --- */
-              <>
-                <div className="text-5xl text-left mb-4">
+              /* --- [보기 모드] 상단 X 버튼 적용 --- */
+              <div className="flex flex-col items-start text-left relative">
+                {/* 오른쪽 상단 X 버튼 */}
+                <button
+                  onClick={() => setSelectedBoard(null)}
+                  className="absolute -top-4 -right-4 w-10 h-10 flex text-gray-500 items-center justify-center text--400 hover:text-gray-800 transition-all cursor-pointer"
+                >
+                  <span className="text-5xl">×</span>
+                </button>
+
+                <div className="text-5xl mb-6 -ml-1">
                   {EMOJI_LIST.find((e) => e.id === selectedBoard?.stickerId)
                     ?.emoji || "😊"}
                 </div>
-                <h3 className="text-lg font-bold mb-4">
-                  {selectedBoard?.author}님의 글
-                </h3>
-                <p className="mb-4">{selectedBoard.content}</p>
 
-                <div className="flex justify-end">
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {selectedBoard?.author}님의 한마디
+                  </h3>
+                  <div className="w-12 h-1 bg-orange-400 mt-5 rounded-full opacity-50"></div>
+                </div>
+
+                <p className="text-gray-900 leading-relaxed mb-10 text-lg">
+                  "{selectedBoard.content}"
+                </p>
+
+                {/* 하단 버튼 그룹: 닫기 버튼을 빼고 수정/삭제만 배치 */}
+                <div className="w-full flex gap-3">
                   <button
-                    onClick={handleEditClick} // 수정 함수 실행
-                    className="flex-1 bg-yellow-500 text-white py-2 rounded"
+                    onClick={handleEditClick}
+                    className="px-4 py-2 bg-orange-400 text-white rounded w-full hover:bg-orange-500 transition-colors"
                   >
                     수정
                   </button>
                   <button
-                    onClick={handleDeleteClick} // 삭제 함수 실행
-                    className="flex-1 bg-red-500 text-white py-2 rounded"
+                    onClick={handleDeleteClick}
+                    className="px-4 py-2 bg-gray-400 text-white rounded w-full hover:bg-gray-500 transition-colors"
                   >
                     삭제
                   </button>
-
-                  <button
-                    onClick={() => setSelectedBoard(null)} // selectedBoard를 null 로 만듦
-                    className="px-4 py-2 bg-gray-500 text-white rounded"
-                  >
-                    닫기
-                  </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
       )}
-      {/* 방명록 작성 버튼 */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-30 right-8 px-5 py-3 bg-orange-400 text-white rounded-full shadow-lg hover:bg-orange-500 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center text-sm font-bold z-50 cursor-pointer"
-      >
-        <div className="flex flex-col items-center">
-          <span className="text-[12px]">📝 방명록 작성하기</span>
-        </div>
-      </button>
-      {/* 2. 분리한 작성 모달 */}
-      <BoardWriteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchBoardList}
-      />
     </div>
   );
 }

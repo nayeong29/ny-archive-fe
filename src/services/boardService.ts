@@ -15,6 +15,7 @@ export interface CreateBoardRequest{
     content: string;
     stickerId: number;
     password: string;
+    createdAt: string;
 }
 
 // 방명록 수정
