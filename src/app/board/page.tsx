@@ -121,25 +121,26 @@ export default function BoardPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-[800px] mx-auto">
+      {" "}
       {/* --- 목록 구역 --- */}
-      <div className="space-y-4">
-        <h1 className="text-xl font-bold mb-4">방명록 목록</h1>
-        {/* map 으로 boards에서 목록을 꺼내서 board 라는 이름을 붙임 */}
+      <h1 className="text-xl font-bold mb-4">방명록 목록</h1>
+      {/* map 으로 boards에서 목록을 꺼내서 board 라는 이름을 붙임 */}
+      <div className="grid grid-cols-3 gap-6">
         {boardList.map((board) => (
           <div
             key={board.id} // 이름표
             // 클릭하면 id 방명록 상세 내용 가져오기
             onClick={() => fetchBoard(board.id)}
-            className="p-4 border border-gray-300 rounded mb-2 cursor-pointer"
+            className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col h-52"
           >
             {/* 숫자를 다시 이모지로 변환해서 출력 */}
-            <span className="text-2xl">
+            <div className="text-3xl mb-3 -ml-1 ">
               {EMOJI_LIST.find((e) => e.id === board.stickerId)?.emoji || "😊"}
-            </span>
-            <p className="font-semibold">{board.author}</p>
+            </div>
+            <p className="font-bold text-gray-900 mb-1">{board.author}</p>
             {/* 50자만 보여주기 */}
-            <p>
+            <p className="text-gray-500 text-sm line-clamp-3">
               {board.content.length > 50
                 ? board.content.substring(0, 50) + "..."
                 : board.content}
@@ -148,7 +149,6 @@ export default function BoardPage() {
           </div>
         ))}
       </div>
-
       {/* --- 상세 보기 팝업 --- */}
       {/* --- selectedBoard 가 비어있지 않으면 뒤에 코드 출력 --- */}
       {selectedBoard && (
@@ -245,7 +245,6 @@ export default function BoardPage() {
           </div>
         </div>
       )}
-
       {/* 방명록 작성 버튼 */}
       <button
         onClick={() => setIsModalOpen(true)}
@@ -255,7 +254,6 @@ export default function BoardPage() {
           <span className="text-[12px]">📝 방명록 작성하기</span>
         </div>
       </button>
-
       {/* 2. 분리한 작성 모달 */}
       <BoardWriteModal
         isOpen={isModalOpen}
